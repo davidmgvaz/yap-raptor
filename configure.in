@@ -1,0 +1,48 @@
+AC_ARG_WITH(raptor,
+	[ --with-raptor[=DIR]           use RAPTOR package in DIR],
+	yap_cv_raptor="$withval",
+	[yap_cv_raptor=yes])
+
+if test "$yap_cv_raptor" = no 
+then
+  ENABLE_RAPTOR="@# "
+else
+  ENABLE_RAPTOR=""
+fi
+
+
+
+if test "$yap_cv_raptor" != no; then
+
+oldlibs="$LIBS"
+oldCPPFLAGS="$CPPFLAGS"
+
+if test "$yap_cv_raptor" != "NONE" -a "$yap_cv_raptor" != "yes"; then
+   CPPFLAGS="-I $yap_cv_raptor/include"
+elif test -d /usr/include/raptor2; then
+   CPPFLAGS="-I  /usr/include/raptor2"
+elif test -d /usr/local/include/raptor2; then
+   CPPFLAGS="-I  /usr/local/include/raptor2"
+elif test "$prefix" != "NONE"; then
+   CPPFLAGS="-I $prefix/include"
+else
+   CPPFLAGS="-I /usr/local/include"
+fi
+
+AC_CHECK_HEADERS(raptor.h)
+
+oldlibs="$LIBS"
+
+AC_CHECK_LIB(raptor2, main)
+
+RAPTOR_LDFLAGS="$LIBS"
+RAPTOR_CPPFLAGS="$CPPFLAGS"
+
+LIBS="$oldlibs"
+CPPFLAGS="$oldCPPFLAGS"
+
+fi
+
+AC_SUBST(ENABLE_RAPTOR)
+AC_SUBST(RAPTOR_LDFLAGS)
+AC_SUBST(RAPTOR_CPPFLAGS)
